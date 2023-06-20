@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472</TargetFrameworks>
+    <UseWPF>true</UseWPF>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Searchable ComboBox</Title>
+    <Authors>melsawy</Authors>
+    <Company />
+    <AnalysisLevel>6.0-all</AnalysisLevel>
+    <PackAsTool>False</PackAsTool>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="TestApp\**" />
+    <EmbeddedResource Remove="TestApp\**" />
+    <None Remove="TestApp\**" />
+    <Page Remove="TestApp\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PresentationFramework.Aero2" Version="1.0.1" />
+  </ItemGroup>
+
+</Project>
