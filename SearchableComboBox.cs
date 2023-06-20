@@ -3,15 +3,19 @@ using System.Windows;
 using System.Collections;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Threading;
 
 namespace SearchableComboBox
 {
     public class SearchableComboBox : ComboBox
     {
         #region Constructors
+        private readonly DispatcherTimer _debounceTimer;
+
         public SearchableComboBox()
         {
-            //this.Loaded += SearchableCB_Loaded;
+            _debounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
+            _debounceTimer.Tick += DebounceTimer_Tick;
             this.DropDownClosed += ClearSearchTerm;
         }
 
@@ -52,7 +56,7 @@ namespace SearchableComboBox
         }
         #endregion
 
-        #region Error and border visibilty
+        #region Error and border visibility
         public static readonly DependencyProperty NotFoundLabelVisibilityProperty =
             DependencyProperty.Register("NotFoundLabelVisibility", typeof(Visibility), typeof(SearchableComboBox), new PropertyMetadata(Visibility.Collapsed));
 
@@ -100,9 +104,22 @@ namespace SearchableComboBox
         {
             if (d is SearchableComboBox searchableComboBox)
             {
-                searchableComboBox._collectionViewSource.View.Refresh();
-                searchableComboBox.UpdateVisibility();
+                searchableComboBox.DebounceFilter();
             }
+        }
+
+        private void DebounceFilter()
+        {
+            _debounceTimer.Stop();
+            _debounceTimer.Start();
+        }
+
+        private void DebounceTimer_Tick(object sender, EventArgs e)
+        {
+            _debounceTimer.Stop();
+
+            _collectionViewSource.View.Refresh();
+            UpdateVisibility();
         }
 
         private bool FilterPredicate(object item)
@@ -125,9 +142,6 @@ namespace SearchableComboBox
         {
             SearchTerm = string.Empty;
         }
-
         #endregion
     }
-
 }
-
