@@ -19,6 +19,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove=".gitattributes" />
+    <None Remove=".gitignore" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="PresentationFramework.Aero2" Version="1.0.1" />
   </ItemGroup>
 
