@@ -9,6 +9,11 @@
     <Company />
     <AnalysisLevel>6.0-all</AnalysisLevel>
     <PackAsTool>False</PackAsTool>
+    <Version>1.0.2</Version>
+    <Description>This allows you to get a custom box with a search text box. Entering text in this textbox will filter the dropdown based on the .ToString() function of the items.</Description>
+    <RepositoryUrl>https://github.com/melsawy93/SearchableComboBox</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>searachablecombobox;combobox;searchable;filtercombobox</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

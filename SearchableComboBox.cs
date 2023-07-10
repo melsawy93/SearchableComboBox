@@ -4,6 +4,7 @@ using System.Collections;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Threading;
+using System.Windows.Input;
 
 namespace SearchableComboBox
 {
@@ -22,6 +23,14 @@ namespace SearchableComboBox
         static SearchableComboBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(SearchableComboBox), new FrameworkPropertyMetadata(typeof(SearchableComboBox)));
+        }
+       
+        private TextBox _searchTermTextBox;
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            _searchTermTextBox = Template.FindName("SearchTermTextBox", this) as TextBox;
         }
         #endregion
 
@@ -141,6 +150,31 @@ namespace SearchableComboBox
         private void ClearSearchTerm(object sender, EventArgs e)
         {
             SearchTerm = string.Empty;
+        }
+        #endregion
+
+        #region Prevent Focus on Dropdown List
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        {
+            base.OnPreviewKeyDown(e);
+
+            if (e.Key == Key.Down || e.Key == Key.Up || e.Key == Key.Escape)
+            {
+                return;
+            }
+
+            if (_searchTermTextBox != null)
+            {
+                if (!_searchTermTextBox.IsFocused)
+                {
+                    _searchTermTextBox.Focus();
+                }
+            }
+            else
+            {
+                // Handle the event only if the TextBox isn't focused
+                e.Handled = true;
+            }
         }
         #endregion
     }
