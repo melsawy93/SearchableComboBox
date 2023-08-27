@@ -26,8 +26,8 @@ namespace TestApp
         {
             InitializeComponent();
             Items = GenerateItems();
+            
             DataContext = this;
-
         }
 
         private List<Item> GenerateItems()

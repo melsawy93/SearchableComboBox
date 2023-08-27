@@ -34,6 +34,31 @@ namespace SearchableComboBox
         }
         #endregion
 
+        #region CustomSort Support
+        public static readonly DependencyProperty CustomSortProperty =
+            DependencyProperty.Register(
+                "CustomSort",
+                typeof(IComparer),
+                typeof(SearchableComboBox),
+                new PropertyMetadata(null, OnCustomSortChanged)
+            );
+
+        public IComparer CustomSort
+        {
+            get => (IComparer)GetValue(CustomSortProperty);
+            set => SetValue(CustomSortProperty, value);
+        }
+
+        private static void OnCustomSortChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var comboBox = d as SearchableComboBox;
+            if (comboBox._collectionViewSource != null && comboBox._collectionViewSource.View is ListCollectionView lcv)
+            {
+                lcv.CustomSort = e.NewValue as IComparer;
+            }
+        }
+        #endregion
+
         #region OnItemsSourceChanged event
         private CollectionViewSource _collectionViewSource;
 
@@ -45,6 +70,11 @@ namespace SearchableComboBox
             {
                 _collectionViewSource = new CollectionViewSource { Source = newValue };
                 _collectionViewSource.View.Filter = FilterPredicate;
+
+                if (_collectionViewSource.View is ListCollectionView lcv && CustomSort != null)
+                {
+                    lcv.CustomSort = CustomSort;
+                }
 
                 ItemsSource = _collectionViewSource.View;
             }
