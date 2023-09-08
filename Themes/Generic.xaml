@@ -4,6 +4,8 @@
     xmlns:local="clr-namespace:SearchableComboBox"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
 
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
     <Style x:Key="FocusVisual">
         <Setter Property="Control.Template">
             <Setter.Value>
@@ -263,6 +265,8 @@
                     IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource TemplatedParent}}"
                     Style="{StaticResource ComboBoxEditableTextBox}" />
             </Border>
+
+
         </Grid>
         <ControlTemplate.Triggers>
             <Trigger Property="IsEnabled" Value="false">
@@ -325,7 +329,7 @@
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
 
-                            <Grid Grid.Row="0">
+                            <Grid Grid.Row="0" Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SearchableComboBox}}, Path=(local:SearchableComboBox.IsSearchEnabled), Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <TextBox
                                     x:Name="SearchTermTextBox"
                                     Padding="5"

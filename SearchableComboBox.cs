@@ -59,6 +59,63 @@ namespace SearchableComboBox
         }
         #endregion
 
+        #region IsSearchEnabled
+
+        public static readonly DependencyProperty IsSearchEnabledProperty =
+            DependencyProperty.RegisterAttached(
+                "IsSearchEnabled",
+                typeof(bool),
+                typeof(SearchableComboBox),
+                new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.Inherits)
+            );
+
+        public static bool GetIsSearchEnabled(DependencyObject obj)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            return (bool)obj.GetValue(IsSearchEnabledProperty);
+        }
+
+        public static void SetIsSearchEnabled(DependencyObject obj, bool value)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            obj.SetValue(IsSearchEnabledProperty, value);
+        }
+
+        #endregion
+
+        #region Placeholder Text
+        public static readonly DependencyProperty PlaceholderProperty =
+            DependencyProperty.RegisterAttached("Placeholder", typeof(string), typeof(SearchableComboBox), new FrameworkPropertyMetadata(string.Empty));
+
+        public static string GetPlaceholder(DependencyObject obj)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            return (string)obj.GetValue(PlaceholderProperty);
+        }
+
+        public static void SetPlaceholder(DependencyObject obj, string value)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            obj.SetValue(PlaceholderProperty, value);
+        } 
+        #endregion
+
         #region OnItemsSourceChanged event
         private CollectionViewSource _collectionViewSource;
 
