@@ -21,6 +21,8 @@ namespace SearchableComboBox
         private TextBox _searchTermTextBox;
         private CollectionViewSource _collectionViewSource;
         private object _lastSelectedItem;
+        private bool _isDropDownOpen = false;
+        private TextBlock _placeholderTextBlock;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchableComboBox"/> class.
@@ -30,7 +32,7 @@ namespace SearchableComboBox
             Debug.WriteLineIf(debug, "Constructor");
             _debounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
             _debounceTimer.Tick += DebounceTimer_Tick;
-            this.DropDownClosed += ClearSearchTerm;
+            this.DropDownClosed += OnDropDownClosed;
         }
 
         static SearchableComboBox()
@@ -43,6 +45,8 @@ namespace SearchableComboBox
             Debug.WriteLineIf(debug, "OnApplyTemplate");
             base.OnApplyTemplate();
             _searchTermTextBox = Template.FindName("SearchTermTextBox", this) as TextBox;
+            _placeholderTextBlock = Template.FindName("PlaceholderTextBlock", this) as TextBlock;
+            UpdatePlaceholderVisibility();
         }
 
         #endregion
@@ -96,22 +100,6 @@ namespace SearchableComboBox
 
         #endregion
 
-        #region IsNullable
-
-        public static readonly DependencyProperty IsNullableProperty =
-            DependencyProperty.Register("IsNullable", typeof(bool), typeof(SearchableComboBox), new PropertyMetadata(false));
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the value is nullable.
-        /// </summary>
-        public bool IsNullable
-        {
-            get => (bool)GetValue(IsNullableProperty);
-            set => SetValue(IsNullableProperty, value);
-        }
-
-        #endregion
-
         #region Placeholder Text
 
         public static readonly DependencyProperty PlaceholderProperty =
@@ -124,6 +112,20 @@ namespace SearchableComboBox
         {
             get => (string)GetValue(PlaceholderProperty);
             set => SetValue(PlaceholderProperty, value);
+        }
+
+        private void UpdatePlaceholderVisibility()
+        {
+            if (_placeholderTextBlock == null) return;
+
+            if (SelectedItem == null || SelectedItem.Equals(string.Empty))
+            {
+                _placeholderTextBlock.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                _placeholderTextBlock.Visibility = Visibility.Collapsed;
+            }
         }
 
         #endregion
@@ -156,16 +158,21 @@ namespace SearchableComboBox
         protected override void OnSelectionChanged(SelectionChangedEventArgs e)
         {
             Debug.WriteLineIf(debug, "OnSelectionChanged");
-            Debug.WriteLineIf(debug, "Added Items Count: " + e.AddedItems.Count);
-            Debug.WriteLineIf(debug, "Removed Items Count: " + e.RemovedItems.Count);
+
+            if (_isDropDownOpen && e.AddedItems.Count == 0 && e.RemovedItems.Count > 0)
+            {
+                // If the dropdown is open and the selection was removed due to filtering, revert the selection to the last selected item
+                SelectedItem = _lastSelectedItem;
+                return; // Exit early to avoid additional processing and raising events
+            }
 
             if (e.AddedItems.Count > 0)
             {
                 _lastSelectedItem = e.AddedItems[0];
             }
 
+            UpdatePlaceholderVisibility();
             base.OnSelectionChanged(e);
-            Debug.WriteLineIf(debug, "SelectionBoxItem " + this.SelectionBoxItem);
         }
 
         #endregion
@@ -257,16 +264,36 @@ namespace SearchableComboBox
             }
 
             string strItem = item.ToString();
-            return strItem.IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0;
+
+            if (strItem.IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        protected override void OnDropDownOpened(EventArgs e)
+        {
+            Debug.WriteLineIf(debug, "OnDropDownOpened");
+            _isDropDownOpen = true;
+            _lastSelectedItem = SelectedItem;  // Store the current selected item.
+
+            this.Dispatcher.BeginInvoke((Action)(() =>
+            {
+                _searchTermTextBox?.Focus();
+            }), DispatcherPriority.ContextIdle);
+
+            base.OnDropDownOpened(e);
         }
 
         #endregion
 
         #region Clear Search
 
-        private void ClearSearchTerm(object sender, EventArgs e)
+        private void OnDropDownClosed(object sender, EventArgs e)
         {
-            Debug.WriteLineIf(debug, "ClearSearchTerm");
+            Debug.WriteLineIf(debug, "OnDropDownClosed");
             SearchTerm = string.Empty;
             _collectionViewSource.View.Refresh();
 
@@ -274,6 +301,7 @@ namespace SearchableComboBox
             {
                 SelectedItem = _lastSelectedItem;
             }
+            _isDropDownOpen = false;
         }
 
         #endregion

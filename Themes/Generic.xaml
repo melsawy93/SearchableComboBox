@@ -348,13 +348,6 @@
                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
         </Grid>
         <ControlTemplate.Triggers>
-            <Trigger Property="SelectedItem" Value="{x:Null}">
-                <Setter TargetName="PlaceholderTextBlock" Property="Visibility" Value="Visible" />
-            </Trigger>
-            <Trigger Property="SelectedItem" Value="{x:Static sys:String.Empty}">
-                <Setter TargetName="PlaceholderTextBlock" Property="Visibility" Value="Visible" />
-            </Trigger>
-
             <Trigger SourceName="PART_Popup" Property="HasDropShadow" Value="true">
                 <Setter TargetName="shadow" Property="Margin" Value="0,0,5,5" />
                 <Setter TargetName="shadow" Property="Color" Value="#71000000" />
