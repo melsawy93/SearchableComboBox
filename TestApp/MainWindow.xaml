@@ -17,9 +17,36 @@
             Height="73"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            SearchableComboBox:SearchableComboBox.IsSearchEnabled="False"
+            SearchableComboBox:SearchableComboBox.IsSearchEnabled="True"
             DisplayMemberPath="Name"
-            ItemsSource="{Binding Items}" />
+            IsSynchronizedWithCurrentItem="True"
+            ItemsSource="{Binding Items}"
+            Placeholder="Select an item..."
+            SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
+
+        <ComboBox
+            Width="400"
+            Height="73"
+            Margin="0,307,0,0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            DisplayMemberPath="Name"
+            ItemsSource="{Binding Items}"
+            SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
+        <Button
+            Width="104"
+            Height="51"
+            Margin="672,96,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Click="Button_Click"
+            Content="Button" />
+        <TextBlock
+            Margin="302,78,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="{Binding SelectedItem.Name}"
+            TextWrapping="Wrap" />
 
     </Grid>
 </Window>

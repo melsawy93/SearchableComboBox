@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,15 +19,36 @@ namespace TestApp
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public List<Item> Items { get; }
 
-        public MainWindow()
+        private Item _selectedItem;
+
+        public Item SelectedItem
         {
-            InitializeComponent();
+            get => _selectedItem;
+            set
+            {
+                if (_selectedItem != value)
+                {
+                    _selectedItem = value;
+                    OnPropertyChanged(nameof(SelectedItem));
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public MainWindow()
+        {   
             Items = GenerateItems();
-            
+            InitializeComponent();
             DataContext = this;
         }
 
@@ -77,5 +99,9 @@ namespace TestApp
             return items;
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            SelectedItem = null;
+        }
     }
 }

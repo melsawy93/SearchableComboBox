@@ -5,16 +5,22 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Threading;
 using System.Windows.Input;
+using System.Diagnostics;
 
 namespace SearchableComboBox
 {
+    /// <summary>
+    /// Represents a ComboBox with search functionality.
+    /// </summary>
     public class SearchableComboBox : ComboBox
     {
         #region Constructors
         private readonly DispatcherTimer _debounceTimer;
+        private bool debug = true;
 
         public SearchableComboBox()
         {
+            Debug.WriteLineIf(debug, "Constructor");
             _debounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
             _debounceTimer.Tick += DebounceTimer_Tick;
             this.DropDownClosed += ClearSearchTerm;
@@ -28,6 +34,7 @@ namespace SearchableComboBox
         private TextBox _searchTermTextBox;
         public override void OnApplyTemplate()
         {
+            Debug.WriteLineIf(debug, "OnApplyTemplate");
             base.OnApplyTemplate();
 
             _searchTermTextBox = Template.FindName("SearchTermTextBox", this) as TextBox;
@@ -60,60 +67,30 @@ namespace SearchableComboBox
         #endregion
 
         #region IsSearchEnabled
-
         public static readonly DependencyProperty IsSearchEnabledProperty =
-            DependencyProperty.RegisterAttached(
+            DependencyProperty.Register(
                 "IsSearchEnabled",
                 typeof(bool),
                 typeof(SearchableComboBox),
-                new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.Inherits)
+                new PropertyMetadata(true)
             );
 
-        public static bool GetIsSearchEnabled(DependencyObject obj)
+        public bool IsSearchEnabled
         {
-            if (obj == null)
-            {
-                throw new ArgumentNullException(nameof(obj));
-            }
-
-            return (bool)obj.GetValue(IsSearchEnabledProperty);
+            get => (bool)GetValue(IsSearchEnabledProperty);
+            set => SetValue(IsSearchEnabledProperty, value);
         }
-
-        public static void SetIsSearchEnabled(DependencyObject obj, bool value)
-        {
-            if (obj == null)
-            {
-                throw new ArgumentNullException(nameof(obj));
-            }
-
-            obj.SetValue(IsSearchEnabledProperty, value);
-        }
-
         #endregion
 
         #region Placeholder Text
         public static readonly DependencyProperty PlaceholderProperty =
-            DependencyProperty.RegisterAttached("Placeholder", typeof(string), typeof(SearchableComboBox), new FrameworkPropertyMetadata(string.Empty));
+            DependencyProperty.Register("Placeholder", typeof(string), typeof(SearchableComboBox), new PropertyMetadata(string.Empty));
 
-        public static string GetPlaceholder(DependencyObject obj)
+        public string Placeholder
         {
-            if (obj == null)
-            {
-                throw new ArgumentNullException(nameof(obj));
-            }
-
-            return (string)obj.GetValue(PlaceholderProperty);
+            get { return (string)GetValue(PlaceholderProperty); }
+            set { SetValue(PlaceholderProperty, value); }
         }
-
-        public static void SetPlaceholder(DependencyObject obj, string value)
-        {
-            if (obj == null)
-            {
-                throw new ArgumentNullException(nameof(obj));
-            }
-
-            obj.SetValue(PlaceholderProperty, value);
-        } 
         #endregion
 
         #region OnItemsSourceChanged event
@@ -121,6 +98,7 @@ namespace SearchableComboBox
 
         protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
         {
+            Debug.WriteLineIf(debug, "OnItemsSourceChanged");
             base.OnItemsSourceChanged(oldValue, newValue);
 
             if (_collectionViewSource == null)
@@ -139,16 +117,30 @@ namespace SearchableComboBox
         #endregion
 
         #region Changes only when selected
+        private object _lastSelectedItem;
+
         protected override void OnSelectionChanged(SelectionChangedEventArgs e)
         {
-            if (e.AddedItems.Count <= 0)
+            Debug.WriteLineIf(debug, "OnSelectionChanged");
+            Debug.WriteLineIf(debug, "Added Items Count: " + e.AddedItems.Count);
+            Debug.WriteLineIf(debug, "Removed Items Count: " + e.RemovedItems.Count);
+
+            if (e.AddedItems.Count > 0)
             {
-                e.Handled = true;
+                _lastSelectedItem = e.AddedItems[0];
             }
-            else
-            {
-                base.OnSelectionChanged(e);
-            }
+
+            //if (e.AddedItems.Count <= 0)
+            //{
+            //    e.Handled = true;
+            //}
+            //else
+            //{
+            //    base.OnSelectionChanged(e);
+            //}
+            base.OnSelectionChanged(e);
+
+            Debug.WriteLineIf(debug, "SelectionBoxItem " + this.SelectionBoxItem);
         }
         #endregion
 
@@ -173,6 +165,7 @@ namespace SearchableComboBox
 
         private void UpdateVisibility()
         {
+            Debug.WriteLineIf(debug, "UpdateVisibility");
             if (_collectionViewSource.View.IsEmpty)
             {
                 NotFoundLabelVisibility = Visibility.Visible;
@@ -236,13 +229,25 @@ namespace SearchableComboBox
 
         private void ClearSearchTerm(object sender, EventArgs e)
         {
+            Debug.WriteLineIf(debug, "ClearSearchTerm");
             SearchTerm = string.Empty;
+
+            // Refresh the view immediately when dropdown closes
+            _collectionViewSource.View.Refresh();
+            UpdateVisibility();
+
+            // Restore the last selected item if SelectedItem is null after dropdown closes
+            if (this.SelectedItem == null && _lastSelectedItem != null)
+            {
+                this.SelectedItem = _lastSelectedItem;
+            }
         }
         #endregion
 
         #region Prevent Focus on Dropdown List
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
+            Debug.WriteLineIf(debug, "OnPreviewKeyDown");
             base.OnPreviewKeyDown(e);
 
             if (e.Key == Key.Down || e.Key == Key.Up || e.Key == Key.Escape)

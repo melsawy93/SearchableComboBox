@@ -2,6 +2,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:SearchableComboBox"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
 
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -199,109 +200,23 @@
         </Setter>
     </Style>
 
-    <ControlTemplate x:Key="ComboBoxEditableTemplate" TargetType="{x:Type ComboBox}">
-        <Grid x:Name="templateRoot" SnapsToDevicePixels="true">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="0" MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" />
-            </Grid.ColumnDefinitions>
-            <Popup
-                x:Name="PART_Popup"
-                Grid.ColumnSpan="2"
-                AllowsTransparency="true"
-                IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
-                Placement="Bottom"
-                PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
-                <theme:SystemDropShadowChrome
-                    x:Name="shadow"
-                    MinWidth="{Binding ActualWidth, ElementName=templateRoot}"
-                    MaxHeight="{TemplateBinding MaxDropDownHeight}"
-                    Color="Transparent">
-                    <Border
-                        x:Name="dropDownBorder"
-                        Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
-                        BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
-                        BorderThickness="1">
-                        <ScrollViewer x:Name="DropDownScrollViewer">
-                            <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
-                                <Canvas
-                                    x:Name="canvas"
-                                    Width="0"
-                                    Height="0"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top">
-                                    <Rectangle
-                                        x:Name="opaqueRect"
-                                        Width="{Binding ActualWidth, ElementName=dropDownBorder}"
-                                        Height="{Binding ActualHeight, ElementName=dropDownBorder}"
-                                        Fill="{Binding Background, ElementName=dropDownBorder}" />
-                                </Canvas>
-                                <ItemsPresenter
-                                    x:Name="ItemsPresenter"
-                                    KeyboardNavigation.DirectionalNavigation="Contained"
-                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                            </Grid>
-                        </ScrollViewer>
-                    </Border>
-                </theme:SystemDropShadowChrome>
-            </Popup>
-            <ToggleButton
-                x:Name="toggleButton"
-                Grid.ColumnSpan="2"
-                Background="{TemplateBinding Background}"
-                BorderBrush="{TemplateBinding BorderBrush}"
-                BorderThickness="{TemplateBinding BorderThickness}"
-                IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                Style="{StaticResource ComboBoxToggleButton}" />
-            <Border
-                x:Name="border"
-                Margin="{TemplateBinding BorderThickness}"
-                Background="{StaticResource TextBox.Static.Background}">
-                <TextBox
-                    x:Name="PART_EditableTextBox"
-                    Margin="{TemplateBinding Padding}"
-                    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                    IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource TemplatedParent}}"
-                    Style="{StaticResource ComboBoxEditableTextBox}" />
-            </Border>
-
-
-        </Grid>
-        <ControlTemplate.Triggers>
-            <Trigger Property="IsEnabled" Value="false">
-                <Setter TargetName="border" Property="Opacity" Value="0.56" />
-            </Trigger>
-            <Trigger Property="IsKeyboardFocusWithin" Value="true">
-                <Setter Property="Foreground" Value="Black" />
-            </Trigger>
-            <Trigger SourceName="PART_Popup" Property="HasDropShadow" Value="true">
-                <Setter TargetName="shadow" Property="Margin" Value="0,0,5,5" />
-                <Setter TargetName="shadow" Property="Color" Value="#71000000" />
-            </Trigger>
-            <Trigger Property="HasItems" Value="false">
-                <Setter TargetName="dropDownBorder" Property="Height" Value="95" />
-            </Trigger>
-            <MultiTrigger>
-                <MultiTrigger.Conditions>
-                    <Condition Property="IsGrouping" Value="true" />
-                    <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false" />
-                </MultiTrigger.Conditions>
-                <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
-            </MultiTrigger>
-            <Trigger SourceName="DropDownScrollViewer" Property="ScrollViewer.CanContentScroll" Value="false">
-                <Setter TargetName="opaqueRect" Property="Canvas.Top" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}" />
-                <Setter TargetName="opaqueRect" Property="Canvas.Left" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}" />
-            </Trigger>
-        </ControlTemplate.Triggers>
-    </ControlTemplate>
-
     <ControlTemplate x:Key="ComboBoxTemplate" TargetType="{x:Type ComboBox}">
         <Grid x:Name="templateRoot" SnapsToDevicePixels="true">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="0" MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" />
             </Grid.ColumnDefinitions>
+
+            <TextBlock
+                x:Name="PlaceholderTextBlock"
+                Margin="{TemplateBinding Padding}"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Panel.ZIndex="1"
+                Foreground="Gray"
+                IsHitTestVisible="False"
+                Text="{Binding Placeholder, RelativeSource={RelativeSource TemplatedParent}, FallbackValue='Failed to Bind'}"
+                Visibility="Collapsed" />
 
             <Popup
                 x:Name="PART_Popup"
@@ -329,7 +244,7 @@
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
 
-                            <Grid Grid.Row="0" Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SearchableComboBox}}, Path=(local:SearchableComboBox.IsSearchEnabled), Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid Grid.Row="0" Visibility="{Binding IsSearchEnabled, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SearchableComboBox}}, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <TextBox
                                     x:Name="SearchTermTextBox"
                                     Padding="5"
@@ -433,6 +348,13 @@
                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
         </Grid>
         <ControlTemplate.Triggers>
+            <Trigger Property="SelectedItem" Value="{x:Null}">
+                <Setter TargetName="PlaceholderTextBlock" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="SelectedItem" Value="{x:Static sys:String.Empty}">
+                <Setter TargetName="PlaceholderTextBlock" Property="Visibility" Value="Visible" />
+            </Trigger>
+
             <Trigger SourceName="PART_Popup" Property="HasDropShadow" Value="true">
                 <Setter TargetName="shadow" Property="Margin" Value="0,0,5,5" />
                 <Setter TargetName="shadow" Property="Color" Value="#71000000" />
