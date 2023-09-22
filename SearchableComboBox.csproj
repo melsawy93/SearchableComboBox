@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472</TargetFrameworks>
+    <TargetFrameworks>net47;net471;net472;net48</TargetFrameworks>
     <UseWPF>true</UseWPF>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Searchable ComboBox</Title>
@@ -9,11 +9,16 @@
     <Company />
     <AnalysisLevel>6.0-all</AnalysisLevel>
     <PackAsTool>False</PackAsTool>
-    <Version>1.0.4</Version>
-    <Description>This allows you to get a custom box with a search text box. Entering text in this textbox will filter the dropdown based on the .ToString() function of the items.</Description>
+    <Version>1.1</Version>
+    <Description>SearchableComboBox is an enhanced version of the standard ComboBox control, providing users with additional features that significantly improve its utility in modern applications. This control is designed to address common use cases where a regular ComboBox may fall short.</Description>
     <RepositoryUrl>https://github.com/melsawy93/SearchableComboBox</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>searachablecombobox;combobox;searchable;filtercombobox</PackageTags>
+    <Copyright>Licensed under MIT</Copyright>
+    <PackageProjectUrl>https://github.com/melsawy93/SearchableComboBox</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +35,17 @@
 
   <ItemGroup>
     <PackageReference Include="PresentationFramework.Aero2" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
