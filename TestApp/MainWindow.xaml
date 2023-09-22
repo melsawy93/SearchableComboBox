@@ -21,7 +21,7 @@
             IsSearchEnabled="True"
             IsSynchronizedWithCurrentItem="True"
             ItemsSource="{Binding Items}"
-            Placeholder="Select an item..."
+            Placeholder="Select item..."
             SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
 
         <ComboBox
