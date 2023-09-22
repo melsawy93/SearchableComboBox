@@ -3,7 +3,7 @@ name: Build and Deploy to NuGet
 on:
   push:
     branches:
-      - main  # Or your default branch name
+      - main
 
 jobs:
   build_and_deploy:
@@ -13,13 +13,8 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v2
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.x'  # Or your project's .NET version
-
-    - name: Build Project
-      run: dotnet build --configuration Release
+    - name: Build Project with MSBuild
+      run: msbuild /p:Configuration=Release
 
     - name: Push to NuGet
       run: dotnet nuget push '**/*.nupkg' --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
