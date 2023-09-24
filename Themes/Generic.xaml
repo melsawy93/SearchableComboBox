@@ -215,6 +215,7 @@
                 Panel.ZIndex="1"
                 Foreground="Gray"
                 IsHitTestVisible="False"
+                Style="{Binding PlaceholderStyle, RelativeSource={RelativeSource TemplatedParent}}"
                 Text="{Binding Placeholder, RelativeSource={RelativeSource TemplatedParent}, FallbackValue='Failed to Bind'}"
                 Visibility="Collapsed" />
 

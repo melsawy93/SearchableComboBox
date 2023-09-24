@@ -102,6 +102,20 @@ namespace SearchableComboBox
 
         #region Placeholder Text
 
+        public static readonly DependencyProperty PlaceholderStyleProperty =
+            DependencyProperty.Register("PlaceholderStyle", typeof(Style), typeof(SearchableComboBox), new PropertyMetadata(null));
+
+        /// <summary>
+        /// Gets or sets the style for the placeholder text block.
+        /// </summary>
+        public Style PlaceholderStyle
+        {
+            get => (Style)GetValue(PlaceholderStyleProperty);
+            set => SetValue(PlaceholderStyleProperty, value);
+        }
+
+
+
         public static readonly DependencyProperty PlaceholderProperty =
             DependencyProperty.Register("Placeholder", typeof(string), typeof(SearchableComboBox), new PropertyMetadata(string.Empty));
 

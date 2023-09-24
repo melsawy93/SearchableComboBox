@@ -9,7 +9,7 @@
     <Company />
     <AnalysisLevel>6.0-all</AnalysisLevel>
     <PackAsTool>False</PackAsTool>
-    <Version>1.1</Version>
+    <Version>1.1.1</Version>
     <Description>SearchableComboBox is an enhanced version of the standard ComboBox control, providing users with additional features that significantly improve its utility in modern applications. This control is designed to address common use cases where a regular ComboBox may fall short.</Description>
     <RepositoryUrl>https://github.com/melsawy93/SearchableComboBox</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
