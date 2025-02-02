@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net47;net471;net472;net48</TargetFrameworks>
+    <TargetFrameworks>net47;net471;net472;net48;net6.0-windows;net7.0-windows;net8.0-windows</TargetFrameworks>
     <UseWPF>true</UseWPF>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Searchable ComboBox</Title>
@@ -47,8 +47,8 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="PresentationFramework.Aero2" Version="1.0.1" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net47' OR '$(TargetFramework)' == 'net471' OR '$(TargetFramework)' == 'net472' OR '$(TargetFramework)' == 'net48'">
+	  <PackageReference Include="PresentationFramework.Aero2" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
